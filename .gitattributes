@@ -1,0 +1,39 @@
+# 行尾与二进制策略
+#
+# 仓库里同时有 TS/JSON/YAML/Markdown 与截图，不统一行尾时不同编辑器会造出
+# 整文件 diff（只改了行尾），review 与 blame 都被污染。这里在 git 层统一：
+# 仓库内存 LF，Windows 检出也用 LF（CI 都跑 Linux）。
+
+* text=auto
+
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.css    text eol=lf
+*.html   text eol=lf
+*.sh     text eol=lf
+*.example text eol=lf
+Dockerfile        text eol=lf
+docker-compose.yml text eol=lf
+LICENSE  text eol=lf
+NOTICE   text eol=lf
+
+# Preserve the upstream SPDX text byte-for-byte; its first line includes a space.
+licenses/BSD-3-Clause.txt whitespace=-blank-at-eol
+
+# 二进制资源不做行尾转换
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary

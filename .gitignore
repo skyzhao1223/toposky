@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# production
+build/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files (only the documented template is public)
+.env
+.env.*
+!.env.example
+.env*.local
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# 实例数据（数据与代码分离）：真实拓扑数据不入库，示例数据见 examples/demo/
+/data/
+
+# test artifacts
+test-results/
+.playwright-mcp/

@@ -1,0 +1,54 @@
+toposky
+Copyright 2026 skyzhao1223
+
+This product includes third-party software. The list below highlights
+selected direct dependencies; it is not a complete transitive inventory.
+The complete locked production dependency inventory, including optional
+platform packages, is in THIRD_PARTY_NOTICES.md. Standard license texts
+are in licenses/; installed-package copyright and license notices are
+collected by `npm run notices:bundle` into the distributable
+build/legal/THIRD_PARTY_LICENSES.txt.
+
+MIT License
+-----------
+  - next
+  - react
+  - react-dom
+  - antd
+  - @ant-design/icons
+  - @ant-design/nextjs-registry
+  - @xyflow/react
+  - dagre
+  - uuid
+  - js-yaml
+
+Eclipse Public License 2.0 (or GPL-3.0-or-later, at your option)
+---------------------------------------------------------------
+  - elkjs (used unmodified)
+
+    elkjs is available at https://github.com/kieler/elkjs and is
+    distributed under the Eclipse Public License 2.0. A copy of the
+    license is included with the package under node_modules/elkjs.
+
+Additional runtime/transitive licenses
+-------------------------------------
+  - sharp: Apache-2.0; its platform libvips binaries include
+    LGPL-3.0-or-later components (some platforms have combined terms).
+  - argparse: Python-2.0.
+  - caniuse-lite data: CC-BY-4.0.
+  - Other transitive packages include ISC, BSD-3-Clause and 0BSD.
+
+Preserve the original package notices and license texts when distributing
+bundles or images. The generated inventory and bundle do not constitute
+legal clearance. Distributors must review corresponding-source and
+replacement/relinking obligations for the exact LGPL/EPL components they
+ship. Node and operating-system base-image notices are separate from this
+npm inventory. Upstream source/build references are listed in
+THIRD_PARTY_NOTICES.md.
+
+Data
+----
+The example dataset in examples/demo/ is fictional (company "星尘科技",
+domains and services invented for demonstration) and is distributed
+under the same license as the code (Apache-2.0). Real instance data is
+not part of this repository.

@@ -1,0 +1,73 @@
+name: Bug report / Bug 报告
+description: Report a reproducible problem. Do not paste real organisation data. / 报告可复现的问题（请勿粘贴真实组织数据）。
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **English** — Please reproduce with the bundled demo dataset. Never paste real system names,
+        domains, repository URLs, teams or people.
+
+        **中文** — 请使用仓库自带的示例数据复现问题，**不要粘贴**真实的系统名、域名、仓库地址、团队或人名。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened? / 发生了什么？
+      description: What did you expect instead? / 你期望的结果是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      description: Page paths, click order, commands — the more specific, the better. / 页面路径、点击顺序、命令，越具体越好。
+      placeholder: |
+        1. npm run data:init && npm run dev
+        2. Open /impact, select ...
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / 影响范围
+      multiple: true
+      options:
+        - Pages and interaction / 页面与交互
+        - Data validation / 数据校验
+        - Impact analysis / 影响分析
+        - Import and export (Backstage etc.) / 导入导出
+        - Build and deployment / 构建与部署
+        - Documentation / 文档
+        - Other / 其他
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit / 版本或提交
+      description: "`git rev-parse --short HEAD`, or a release tag. / 版本号或提交哈希。"
+      placeholder: 0.1.0 / 9c46db8
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment / 环境
+      placeholder: |
+        - OS: macOS 15 / Ubuntu 24.04
+        - Node: v24.x
+        - Run mode: next dev / next start / Docker
+        - Data: bundled demo / my own data (do not paste it) / 示例数据 / 自己的数据（不要粘贴内容）
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots / 日志或截图
+      description: Redact domains, repositories and team names first. / 请先脱敏（去掉域名、仓库、团队名）。
+      render: shell
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checklist / 确认
+      options:
+        - label: I have not included any real organisation data. / 我确认未包含任何真实组织数据。
+          required: true
+        - label: I reproduced this on the latest main branch. / 我已在最新代码上复现过。
+          required: false

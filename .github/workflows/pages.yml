@@ -1,0 +1,62 @@
+name: Pages
+
+# 只读静态演示站（示例数据）。GitHub Pages 需要仓库为 public（或付费计划）。
+# 项目 Pages 等价构建：NEXT_PUBLIC_BASE_PATH=/toposky npm run build:demo
+# 本地 root 演示不设置 NEXT_PUBLIC_BASE_PATH；用户站 owner.github.io 自动保持 root。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy the demo to Pages (requires explicit approval)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Resolve Pages base path
+        run: |
+          node --input-type=module -e "import { pagesBasePath } from './scripts/lib/demo-path.mjs'; console.log('NEXT_PUBLIC_BASE_PATH=' + pagesBasePath(process.env.GITHUB_REPOSITORY))" >> "$GITHUB_ENV"
+      - name: Build isolated static demo
+        run: npm run build:demo
+      - name: Verify all exported pages, resources, navigation and source preservation
+        run: node scripts/check-demo.mjs --base-path "$NEXT_PUBLIC_BASE_PATH"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    name: Deploy
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - id: deployment
+        uses: actions/deploy-pages@v4

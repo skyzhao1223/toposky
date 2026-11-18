@@ -1,0 +1,44 @@
+name: Feature request / 功能建议
+description: Propose a feature or improvement. Open an issue before large changes. / 提出新功能或改进；大改动请先在本 issue 对齐设计。
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / 要解决什么问题
+      description: Describe the scenario and the pain, not just the solution. / 描述场景与痛点，而不是直接给方案。
+      placeholder: When I integrate ..., I need ... / 我在接入 … 时，需要 …
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal / 建议方案
+      description: Optional. If it changes the data model, describe fields and compatibility. / 可选。涉及数据模型变更时，请说明字段与兼容性。
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / 方向
+      multiple: true
+      options:
+        - Data model and validation / 数据模型与校验
+        - Impact analysis / 影响分析
+        - Visualisation and interaction / 可视化与交互
+        - Automatic collection and integrations / 自动采集与外部集成
+        - Deployment and operations / 部署与运维
+        - Documentation / 文档
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / 备选方案
+      description: What did you consider, and why not? / 你考虑过哪些替代做法？为什么不选？
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checklist / 确认
+      options:
+        - label: I understand that the public repository does not accept real organisation data. / 我理解公开仓库不接受真实组织数据。
+          required: true
+        - label: This change may need data model, documentation and test updates. / 这个改动可能需要同步数据模型、文档与测试。
+          required: false

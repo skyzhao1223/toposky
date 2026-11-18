@@ -1,0 +1,21 @@
+# 本地/单机部署：实例数据挂载到 /data，镜像只读运行。
+#
+#   npm run data:init          # 可选：从示例数据初始化 ./data
+#   docker compose up --build  # http://127.0.0.1:3000
+#
+# 首次启动时仅对空的默认 /data 卷初始化虚构示例；绝不覆盖已有内容。
+# Linux bind mount 需提前创建 ./data 并给 UID 1001 写权限（推荐先 npm run data:init）。
+# 数据目录独立于镜像，重建容器不丢数据；远程访问必须另配认证与 HTTPS。
+
+services:
+  app:
+    build:
+      context: .
+    image: toposky:local
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      TOPOLOGY_DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

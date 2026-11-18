@@ -1,0 +1,61 @@
+name: Docker
+
+# 构建镜像并验证默认空卷初始化、真实 JSON 内容、损坏数据失败与重启不覆盖。
+# 发布镜像由 release.yml 在打 tag 时推到 GHCR；这里不推送。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: toposky:ci
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          docker run -d --name toposky toposky:ci
+          ready=0
+          for i in $(seq 1 30); do
+            if docker exec toposky node scripts/healthcheck.mjs --expect-demo; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" = 1
+          # A malformed existing file must return a safe 503, not a healthy empty graph.
+          docker exec toposky node -e "require('fs').writeFileSync('/data/topology.json', 'invalid-existing-data')"
+          docker exec toposky node --input-type=module -e "const r=await fetch('http://127.0.0.1:3000/api/topology'); const b=await r.json(); if(r.status!==503 || b.code!=='TOPOLOGY_DATA_UNAVAILABLE' || JSON.stringify(b).includes('/data')) process.exit(1)"
+          if docker exec toposky node scripts/healthcheck.mjs; then
+            echo 'Malformed data incorrectly passed health check'
+            exit 1
+          fi
+          # The entrypoint must preserve existing operator data, even when it is invalid.
+          docker restart toposky
+          docker exec toposky node -e "if(require('fs').readFileSync('/data/topology.json','utf8')!=='invalid-existing-data') process.exit(1)"
+      - name: Container logs on failure
+        if: failure()
+        run: docker logs toposky || true
+      - name: Remove smoke-test container
+        if: always()
+        run: docker rm -f -v toposky || true

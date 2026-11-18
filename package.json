@@ -1,0 +1,62 @@
+{
+  "name": "toposky",
+  "description": "System dependency graph with evidence and impact analysis",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "tsc": "tsc --noEmit",
+    "validate": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/validate-topology.mjs",
+    "report:quality": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/data-quality-report.mjs",
+    "docs:numbers": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/docs-numbers.mjs",
+    "prebuild": "npm run validate",
+    "data:init": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/init-data.mjs",
+    "data:status": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/data-status.mjs",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"test/**/*.test.mjs\"",
+    "backstage:export": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/backstage.mjs export",
+    "backstage:import": "node --env-file-if-exists=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/backstage.mjs import",
+    "export:oss": "node scripts/export-oss.mjs",
+    "audit:prod": "npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org",
+    "notices:generate": "node scripts/third-party-notices.mjs",
+    "notices:check": "node scripts/third-party-notices.mjs --check",
+    "notices:bundle": "node scripts/third-party-notices.mjs --bundle",
+    "build:demo": "node scripts/build-demo.mjs",
+    "check:demo": "node scripts/check-demo.mjs",
+    "serve:demo": "npx --yes serve --listen tcp://127.0.0.1:3000 out"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.3.4",
+    "@ant-design/nextjs-registry": "^1.3.0",
+    "@types/dagre": "^0.7.54",
+    "@xyflow/react": "^12.11.6",
+    "antd": "^6.6.3",
+    "dagre": "^0.8.5",
+    "elkjs": "^0.12.0",
+    "js-yaml": "^4.3.2",
+    "next": "^16.4.6",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@types/uuid": "^11.0.0",
+    "autoprefixer": "^10.5.5",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.4.6",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  }
+}

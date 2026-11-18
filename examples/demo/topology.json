@@ -1,0 +1,739 @@
+{
+  "$schema": "../../topology.schema.json",
+  "_comment": "示例数据：虚构的「星尘科技」内部信息化拓扑，用于演示 schema 与界面。真实数据请放到 data/topology.json（已被 .gitignore 忽略）或通过 TOPOLOGY_DATA 指定。",
+  "nodes": [
+    {
+      "id": "workbench-web",
+      "name": "员工工作台（Web）",
+      "description": "统一入口：待办、常用应用、消息中心",
+      "category": "application",
+      "layer": "access",
+      "appType": "frontend",
+      "businessLine": "oa-platform",
+      "systemId": "workbench",
+      "url": "https://it.example.com/workbench",
+      "environments": {
+        "production": {
+          "url": "https://it.example.com/workbench",
+          "status": "running",
+          "version": "3.8.2",
+          "replicas": 3
+        },
+        "test": {
+          "url": "https://it-test.example.com/workbench",
+          "status": "running",
+          "version": "3.9.0-rc1",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "expense-web",
+      "name": "差旅报销（Web）",
+      "description": "差旅申请、报销单填写与进度查询",
+      "category": "application",
+      "layer": "access",
+      "appType": "frontend",
+      "businessLine": "travel",
+      "systemId": "expense",
+      "url": "https://it.example.com/expense"
+    },
+    {
+      "id": "workbench-api",
+      "name": "工作台服务",
+      "description": "聚合待办、应用入口与用户偏好",
+      "category": "application",
+      "layer": "application",
+      "appType": "bff",
+      "businessLine": "oa-platform",
+      "systemId": "workbench",
+      "systemPrimary": true,
+      "owner": "协同平台组",
+      "links": {
+        "repo": "https://example.com/acme/workbench-api"
+      },
+      "environments": {
+        "production": {
+          "url": "https://it.example.com/api/workbench",
+          "status": "running",
+          "version": "3.8.2",
+          "replicas": 4
+        }
+      }
+    },
+    {
+      "id": "approval-api",
+      "name": "审批引擎",
+      "description": "流程定义、节点流转与审批事件发布",
+      "category": "application",
+      "layer": "application",
+      "appType": "backend",
+      "businessLine": "oa-platform",
+      "systemId": "approval",
+      "systemPrimary": true,
+      "owner": "协同平台组",
+      "links": {
+        "repo": "https://example.com/acme/approval-api"
+      },
+      "environments": {
+        "production": {
+          "url": "https://it.example.com/api/approval",
+          "status": "running",
+          "version": "2.4.1",
+          "replicas": 6
+        },
+        "staging": {
+          "status": "degraded",
+          "version": "2.5.0",
+          "replicas": 2,
+          "notes": "预发环境滚更中"
+        }
+      }
+    },
+    {
+      "id": "expense-api",
+      "name": "报销服务",
+      "description": "差旅标准校验、发票核对与报销单状态机",
+      "category": "application",
+      "layer": "application",
+      "appType": "backend",
+      "businessLine": "travel",
+      "systemId": "expense",
+      "systemPrimary": true,
+      "owner": "财务IT组",
+      "links": {
+        "repo": "https://example.com/acme/expense-api"
+      }
+    },
+    {
+      "id": "hr-api",
+      "name": "人事核心服务",
+      "description": "组织架构、员工主数据与假勤额度",
+      "category": "application",
+      "layer": "application",
+      "appType": "backend",
+      "businessLine": "hr",
+      "systemId": "hr-core",
+      "systemPrimary": true,
+      "owner": "HR 系统组",
+      "links": {
+        "repo": "https://example.com/acme/hr-api"
+      }
+    },
+    {
+      "id": "mysql",
+      "name": "MySQL",
+      "description": "业务关系型数据库（主从）",
+      "category": "middleware",
+      "layer": "middleware",
+      "owner": "基础架构组",
+      "environments": {
+        "production": {
+          "status": "running",
+          "version": "8.0",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "description": "缓存与分布式锁",
+      "category": "middleware",
+      "layer": "middleware",
+      "owner": "基础架构组"
+    },
+    {
+      "id": "kafka",
+      "name": "Kafka",
+      "description": "审批、组织变更等业务事件总线",
+      "category": "middleware",
+      "layer": "middleware",
+      "owner": "基础架构组"
+    },
+    {
+      "id": "nacos",
+      "name": "Nacos",
+      "description": "服务注册与动态配置中心",
+      "category": "middleware",
+      "layer": "middleware",
+      "owner": "基础架构组"
+    },
+    {
+      "id": "k8s",
+      "name": "Kubernetes",
+      "description": "容器编排与工作负载调度",
+      "category": "infrastructure",
+      "layer": "infrastructure",
+      "owner": "SRE 组"
+    },
+    {
+      "id": "sms-vendor",
+      "name": "短信服务商",
+      "description": "审批结果与验证码短信下发（外部 SaaS）",
+      "category": "external",
+      "layer": "external",
+      "vendor": "示例短信云",
+      "contacts": [
+        {
+          "name": "客户成功经理",
+          "role": "售后支持",
+          "email": "support@example.com"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "r-001",
+      "source": "workbench-web",
+      "target": "workbench-api",
+      "relationType": "calls",
+      "label": "待办列表",
+      "contract": {
+        "kind": "http",
+        "target": "GET /api/workbench/todos"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "src/api/todo.ts:18",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-002",
+      "source": "expense-web",
+      "target": "expense-api",
+      "relationType": "calls",
+      "label": "提交报销单",
+      "contract": {
+        "kind": "http",
+        "target": "POST /api/expense/claims"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "src/api/claim.ts:31",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-003",
+      "source": "workbench-api",
+      "target": "approval-api",
+      "relationType": "calls",
+      "label": "发起审批",
+      "contract": {
+        "kind": "rpc",
+        "target": "ApprovalService.submit"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "src/client/approval.ts:9",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-004",
+      "source": "expense-api",
+      "target": "approval-api",
+      "relationType": "calls",
+      "label": "报销单走审批",
+      "contract": {
+        "kind": "rpc",
+        "target": "ApprovalService.submit"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "src/client/approval.ts:9",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-005",
+      "source": "workbench-api",
+      "target": "mysql",
+      "relationType": "depends_on",
+      "label": "读写待办",
+      "contract": {
+        "kind": "db",
+        "target": "app_todo"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "mapper/TodoMapper.xml:12",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-006",
+      "source": "approval-api",
+      "target": "mysql",
+      "relationType": "depends_on",
+      "label": "流程实例",
+      "contract": {
+        "kind": "db",
+        "target": "approval_instance"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "mapper/InstanceMapper.xml:7",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-007",
+      "source": "expense-api",
+      "target": "mysql",
+      "relationType": "depends_on",
+      "label": "报销单",
+      "contract": {
+        "kind": "db",
+        "target": "expense_claim"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "mapper/ClaimMapper.xml:9",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-008",
+      "source": "hr-api",
+      "target": "mysql",
+      "relationType": "depends_on",
+      "label": "员工主数据",
+      "contract": {
+        "kind": "db",
+        "target": "hr_employee"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "mapper/EmployeeMapper.xml:5",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-009",
+      "source": "approval-api",
+      "target": "kafka",
+      "relationType": "publishes_to",
+      "label": "审批事件",
+      "contract": {
+        "kind": "mq",
+        "target": "approval-events"
+      },
+      "confidence": "high",
+      "evidence": {
+        "kind": "code",
+        "ref": "src/event/ApprovalPublisher.ts:22",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-010",
+      "source": "approval-api",
+      "target": "redis",
+      "relationType": "depends_on",
+      "label": "流程定义缓存",
+      "contract": {
+        "kind": "other",
+        "target": "cache:approval:def:*"
+      },
+      "confidence": "medium",
+      "evidence": {
+        "kind": "config",
+        "ref": "application-prod.yaml:24",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-011",
+      "source": "workbench-api",
+      "target": "redis",
+      "relationType": "depends_on",
+      "label": "会话与偏好缓存",
+      "contract": {
+        "kind": "other",
+        "target": "cache:workbench:session:*"
+      },
+      "confidence": "medium",
+      "evidence": {
+        "kind": "config",
+        "ref": "application-prod.yaml:18",
+        "verdict": "supports"
+      }
+    },
+    {
+      "id": "r-012",
+      "source": "workbench-api",
+      "target": "nacos",
+      "relationType": "depends_on",
+      "label": "服务注册",
+      "confidence": "high",
+      "evidence": {
+        "kind": "config",
+        "ref": "application-prod.yaml:6",
+        "verdict": "supports"
+      },
+      "contract": {
+        "kind": "other",
+        "target": "data-id: application-prod.yaml",
+        "note": "服务注册（无接口契约）"
+      }
+    },
+    {
+      "id": "r-013",
+      "source": "expense-api",
+      "target": "nacos",
+      "relationType": "depends_on",
+      "label": "服务注册",
+      "confidence": "high",
+      "evidence": {
+        "kind": "config",
+        "ref": "application-prod.yaml:6",
+        "verdict": "supports"
+      },
+      "contract": {
+        "kind": "other",
+        "target": "data-id: application-prod.yaml",
+        "note": "服务注册（无接口契约）"
+      }
+    },
+    {
+      "id": "r-014",
+      "source": "approval-api",
+      "target": "sms-vendor",
+      "relationType": "calls",
+      "label": "审批结果短信",
+      "contract": {
+        "kind": "http",
+        "target": "POST /v1/sms/send"
+      },
+      "confidence": "medium",
+      "evidence": {
+        "kind": "doc",
+        "ref": "接入合同附件 A:2",
+        "verdict": "weak"
+      }
+    },
+    {
+      "id": "r-015",
+      "source": "approval-api",
+      "target": "k8s",
+      "relationType": "deploys_to",
+      "label": "容器化部署",
+      "confidence": "high",
+      "evidence": {
+        "kind": "config",
+        "ref": "deploy/approval-api.yaml:3",
+        "verdict": "supports"
+      },
+      "contract": {
+        "kind": "other",
+        "target": "deploy/approval-api.yaml"
+      }
+    },
+    {
+      "id": "r-016",
+      "source": "hr-api",
+      "target": "nacos",
+      "relationType": "depends_on",
+      "label": "服务注册",
+      "confidence": "high",
+      "evidence": {
+        "kind": "config",
+        "ref": "application-prod.yaml:6",
+        "verdict": "supports"
+      },
+      "contract": {
+        "kind": "other",
+        "target": "data-id: application-prod.yaml",
+        "note": "服务注册（无接口契约）"
+      }
+    }
+  ],
+  "systems": [
+    {
+      "id": "workbench",
+      "name": "员工工作台",
+      "description": "统一待办与应用入口",
+      "owner": "协同平台组",
+      "businessLine": "oa-platform",
+      "documented": true
+    },
+    {
+      "id": "approval",
+      "name": "审批中心",
+      "description": "统一审批引擎与流程编排",
+      "owner": "协同平台组",
+      "businessLine": "oa-platform",
+      "documented": true
+    },
+    {
+      "id": "expense",
+      "name": "差旅报销",
+      "description": "差旅申请、报销与合规校验",
+      "owner": "财务IT组",
+      "businessLine": "travel",
+      "documented": true
+    },
+    {
+      "id": "hr-core",
+      "name": "人事核心",
+      "description": "组织与员工主数据",
+      "owner": "HR 系统组",
+      "businessLine": "hr",
+      "documented": true
+    }
+  ],
+  "entryRoutes": [
+    {
+      "env": "prod",
+      "domain": "it.example.com",
+      "path": "/api/workbench/*",
+      "priority": 10,
+      "target": "workbench-gateway",
+      "appId": 1001,
+      "https": true,
+      "nodeId": "workbench-api"
+    },
+    {
+      "env": "prod",
+      "domain": "it.example.com",
+      "path": "/api/approval/*",
+      "priority": 10,
+      "target": "approval-gateway",
+      "appId": 1002,
+      "https": true,
+      "nodeId": "approval-api"
+    },
+    {
+      "env": "prod",
+      "domain": "it.example.com",
+      "path": "/api/expense/*",
+      "priority": 10,
+      "target": "expense-gateway",
+      "appId": 1003,
+      "https": true,
+      "nodeId": "expense-api"
+    },
+    {
+      "env": "test",
+      "domain": "it-test.example.com",
+      "path": "/api/*",
+      "priority": 5,
+      "target": "test-gateway",
+      "appId": 2001,
+      "https": true
+    }
+  ],
+  "domains": [
+    {
+      "id": "collab",
+      "name": "协同办公",
+      "nameEn": "Collaboration",
+      "color": "#1677ff",
+      "icon": "🔀",
+      "description": "流程、待办与门户"
+    },
+    {
+      "id": "expense",
+      "name": "费用与差旅",
+      "nameEn": "Expense",
+      "color": "#52c41a",
+      "icon": "✈️",
+      "description": "差旅申请与报销"
+    },
+    {
+      "id": "people",
+      "name": "人事",
+      "nameEn": "People",
+      "color": "#2f54eb",
+      "icon": "👥",
+      "description": "组织与员工主数据"
+    }
+  ],
+  "businessLines": [
+    {
+      "id": "oa-platform",
+      "name": "OA 平台",
+      "color": "#1677ff",
+      "owner": "协同平台组",
+      "domain": "collab"
+    },
+    {
+      "id": "travel",
+      "name": "差旅线",
+      "color": "#52c41a",
+      "owner": "财务IT组",
+      "domain": "expense"
+    },
+    {
+      "id": "hr",
+      "name": "HR 线",
+      "color": "#2f54eb",
+      "owner": "HR 系统组",
+      "domain": "people"
+    },
+    {
+      "id": "infra",
+      "name": "基础架构",
+      "color": "#fa8c16",
+      "owner": "基础架构组"
+    },
+    {
+      "id": "external",
+      "name": "外部系统",
+      "color": "#8c8c8c"
+    }
+  ],
+  "businessLineGroups": [
+    {
+      "id": "biz-group",
+      "name": "业务线",
+      "color": "#1677ff",
+      "children": [
+        "oa-platform",
+        "travel",
+        "hr"
+      ]
+    }
+  ],
+  "businessFlows": [
+    {
+      "id": "flow-leave",
+      "name": "请假审批",
+      "description": "员工提交请假 → 主管审批 → 人事额度扣减",
+      "businessLine": "oa-platform",
+      "domain": "collab",
+      "owner": "协同平台组",
+      "criticality": "P2",
+      "trigger": "员工在工作台发起请假",
+      "kpi": "平均审批时长 ≤ 4 小时",
+      "steps": [
+        {
+          "nodeId": "workbench-web",
+          "label": "填写请假单"
+        },
+        {
+          "nodeId": "workbench-api",
+          "label": "发起审批"
+        },
+        {
+          "nodeId": "approval-api",
+          "label": "流程流转"
+        },
+        {
+          "nodeId": "hr-api",
+          "label": "扣减假勤额度"
+        }
+      ]
+    },
+    {
+      "id": "flow-expense",
+      "name": "差旅报销",
+      "description": "出差申请 → 报销单提交 → 审批 → 打款",
+      "businessLine": "travel",
+      "domain": "expense",
+      "owner": "财务IT组",
+      "criticality": "P1",
+      "trigger": "员工提交报销单",
+      "kpi": "报销单一次通过率 ≥ 85%",
+      "steps": [
+        {
+          "nodeId": "expense-web",
+          "label": "填写报销单"
+        },
+        {
+          "nodeId": "expense-api",
+          "label": "校验与落库"
+        },
+        {
+          "nodeId": "approval-api",
+          "label": "审批流转"
+        },
+        {
+          "nodeId": "sms-vendor",
+          "label": "结果通知"
+        }
+      ]
+    }
+  ],
+  "processHosts": [
+    {
+      "id": "bpmn",
+      "name": "BPMN 引擎",
+      "color": "#1677ff",
+      "description": "标准 BPMN 2.0 流程引擎"
+    },
+    {
+      "id": "legacy",
+      "name": "旧版引擎",
+      "color": "#722ed1",
+      "description": "历史流程引擎，逐步迁移"
+    }
+  ],
+  "processCatalog": {
+    "domains": [
+      {
+        "id": "collab",
+        "name": "协同办公",
+        "nameEn": "Collaboration",
+        "groups": [
+          {
+            "id": "approval-group",
+            "name": "审批类",
+            "nameEn": "Approval",
+            "processes": [
+              {
+                "id": "proc-leave",
+                "name": "请假审批",
+                "nameEn": "Leave Approval",
+                "desc": "年假、事假、病假等统一审批",
+                "systems": [
+                  "workbench-api",
+                  "approval-api",
+                  "hr-api"
+                ],
+                "flows": [
+                  "flow-leave"
+                ],
+                "host": "bpmn"
+              },
+              {
+                "id": "proc-expense",
+                "name": "差旅报销",
+                "nameEn": "Expense Claim",
+                "desc": "出差申请与报销单审批",
+                "systems": [
+                  "expense-api",
+                  "approval-api"
+                ],
+                "flows": [
+                  "flow-expense"
+                ],
+                "host": "legacy"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dependencies": [
+      {
+        "from": "proc-expense",
+        "to": "proc-leave",
+        "type": "前置",
+        "note": "报销需先有通过的出差申请"
+      }
+    ]
+  }
+}

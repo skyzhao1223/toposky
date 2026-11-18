@@ -1,0 +1,34 @@
+name: Link check
+
+# 文档外链巡检。仓库转公开前，指向本仓库自身的链接在匿名访问下不可达，
+# 因此先排除自己（公开后可以删掉 --exclude 里对应的两条）。
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # 每周一 06:00 UTC
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**/*.md'
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    name: Check markdown links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-concurrency 8
+            --accept 200,206,429
+            --exclude '^https://github\.com/skyzhao1223/(toposky|toposky-data)'
+            --exclude '^https://img\.shields\.io'
+            './**/*.md'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
